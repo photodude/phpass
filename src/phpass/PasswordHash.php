@@ -3,7 +3,7 @@
  *
  * Portable PHP password hashing framework.
  *
- * source Version 0.3 / genuine.
+ * source Version 0.4 / genuine.
  * Version 0.3.1 / photodude.
  *
  * Written by Solar Designer <solar at openwall.com> in 2004-2006 and placed in
@@ -34,7 +34,7 @@ namespace photodude\phpass;
 /**
  * PasswordHash class is a portable password hashing framework for use in PHP applications.
  *
- * @since       3.1
+ * @since       0.4.1
  */
 class PasswordHash
 {
@@ -42,7 +42,7 @@ class PasswordHash
 	* The itoa64
 	*
 	* @var    string
-	* @since  0.3.0
+	* @since  0.4.0
 	*/
 	private $itoa64;
 
@@ -50,7 +50,7 @@ class PasswordHash
 	* The iteration_count_log2
 	*
 	* @var    integer
-	* @since  0.3.0
+	* @since  0.4.0
 	*/
 	private $iteration_count_log2;
 
@@ -58,7 +58,7 @@ class PasswordHash
 	* The portable_hashes
 	*
 	* @var    string
-	* @since  0.3.0
+	* @since  0.4.0
 	*/
 	private $portable_hashes;
 
@@ -66,7 +66,7 @@ class PasswordHash
 	* The random_state
 	*
 	* @var    string
-	* @since  0.3.0
+	* @since  0.4.0
 	*/
 	private $random_state;
 
@@ -76,7 +76,7 @@ class PasswordHash
 	 * @param int $iteration_count_log2
 	 * @param boolean $portable_hashes
 	 *
-	 * @since 0.3.0
+	 * @since 0.4.0
 	 */
 	public function __construct($iteration_count_log2, $portable_hashes)
 	{
@@ -105,7 +105,7 @@ class PasswordHash
 	 * @param int $iteration_count_log2
 	 * @param boolean $portable_hashes
 	 *
-	 * @since 0.3.1
+	 * @since 0.4.1
 	 */
 	public function PasswordHash($iteration_count_log2, $portable_hashes)
 	{
@@ -117,13 +117,13 @@ class PasswordHash
 	 *
 	 * @return String
 	 *
-	 * @since 0.3.0
+	 * @since 0.4.0
 	 */
 	private function get_random_bytes($count)
 	{
 		$output = '';
 
-		if (is_readable('/dev/urandom') && ($fh = @fopen('/dev/urandom', 'rb')))
+		if (@is_readable('/dev/urandom') && ($fh = @fopen('/dev/urandom', 'rb')))
 		{
 			$output = fread($fh, $count);
 			fclose($fh);
@@ -151,7 +151,7 @@ class PasswordHash
 	 *
 	 * @return String
 	 *
-	 * @since 0.3.0
+	 * @since 0.4.0
 	 */
 	private function encode64($input, $count)
 	{
@@ -200,7 +200,7 @@ class PasswordHash
 	 *
 	 * @return String
 	 *
-	 * @since 0.3.0
+	 * @since 0.4.0
 	 */
 	private function gensalt_private($input)
 	{
@@ -217,7 +217,7 @@ class PasswordHash
 	 *
 	 * @return String
 	 *
-	 * @since 0.3.0
+	 * @since 0.4.0
 	 */
 	private function crypt_private($password, $setting)
 	{
@@ -291,7 +291,7 @@ class PasswordHash
 	 *
 	 * @return String
 	 *
-	 * @since 0.3.0
+	 * @since 0.4.0
 	 */
 	private function gensalt_extended($input)
 	{
@@ -316,7 +316,7 @@ class PasswordHash
 	 *
 	 * @return String
 	 *
-	 * @since 0.3.0
+	 * @since 0.4.0
 	 */
 	private function gensalt_blowfish($input)
 	{
@@ -369,7 +369,7 @@ class PasswordHash
 	/**
 	 * @param String $password
 	 *
-	 * @since 0.3.0
+	 * @since 0.4.0
 	 */
 	public function HashPassword($password)
 	{
@@ -427,7 +427,7 @@ class PasswordHash
 	 *
 	 * @return boolean
 	 *
-	 * @since 0.3.0
+	 * @since 0.4.0
 	 */
 	public function CheckPassword($password, $stored_hash)
 	{
