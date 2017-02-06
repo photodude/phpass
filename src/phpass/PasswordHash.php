@@ -200,7 +200,7 @@ class PasswordHash {
 
 		$id = substr($setting, 0, 3);
 
-		// We use "$P$", phpBB3 uses "$H$" for the same thing
+		# We use "$P$", phpBB3 uses "$H$" for the same thing
 		if ($id != '$P$' && $id != '$H$') {
 			return $output;
 		}
@@ -256,8 +256,8 @@ class PasswordHash {
 	private function gensalt_extended($input)
 	{
 		$count_log2 = min($this->iteration_count_log2 + 8, 24);
-		// This should be odd to not reveal weak DES keys, and the
-		// maximum valid value is (2**24 - 1) which is odd anyway.
+		# This should be odd to not reveal weak DES keys, and the
+		# maximum valid value is (2**24 - 1) which is odd anyway.
 		$count = (1 << $count_log2) - 1;
 
 		$output = '_';
