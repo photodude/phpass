@@ -28,20 +28,20 @@ namespace openwall\phpass;
 
 class PasswordHash {
 	#
-	# The itoa64
+	# Alphabet used in itoa64 conversions.
 	#
 	# @var    string
 	# @since  0.1.0
 	#
-	private $itoa64;
+	private $itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
 	#
-	# The iteration_count_log2
+	# The Logarithmic cost value used when generating hash values indicating the number of rounds used to generate hashes
 	#
 	# @var    integer
 	# @since  0.1.0
 	#
-	private $iteration_count_log2;
+	private $iteration_count_log2 = 12;
 
 	#
 	# The portable_hashes
@@ -52,7 +52,7 @@ class PasswordHash {
 	private $portable_hashes;
 
 	#
-	# The random_state
+	# The cached random state
 	#
 	# @var    string
 	# @since  0.1.0
@@ -62,17 +62,19 @@ class PasswordHash {
 	#
 	# Constructor
 	#
-	# @param int $iteration_count_log2
+	# @param int $iteration_count_log2 Logarithmic cost value used when generating hash values
 	# @param boolean $portable_hashes
 	#
 	# @since 0.5.0
 	#
 	public function __construct($iteration_count_log2, $portable_hashes)
 	{
-		$this->itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-
-		if ($iteration_count_log2 < 4 || $iteration_count_log2 > 31) {
-			$iteration_count_log2 = 8;
+		if ($iteration_count_log2 < 10) {
+			# The minimum Logarithmic cost value
+			$iteration_count_log2 = 10; 
+		} else if ($iteration_count_log2 > 32) {
+			# The maximum Logarithmic cost value
+			$iteration_count_log2 = 32;
 		}
 
 		$this->iteration_count_log2 = $iteration_count_log2;
@@ -87,10 +89,11 @@ class PasswordHash {
 	#
 	# A backwards compatable constructor
 	#
-	# @param int $iteration_count_log2
+	# @param int $iteration_count_log2 Logarithmic cost value used when generating hash values
 	# @param boolean $portable_hashes
 	#
 	# @since 0.1.0
+	# @throws InvalidArgumentException Thows an InvalidArgumentException if the $count parameter is not a positive integer.
 	#
 	public function PasswordHash($iteration_count_log2, $portable_hashes)
 	{
@@ -103,9 +106,14 @@ class PasswordHash {
 	# @return String
 	#
 	# @since 0.1.0
+	# @throws InvalidArgumentException Thows an InvalidArgumentException if the $count parameter is not a positive integer.
 	#
 	private function get_random_bytes($count)
 	{
+		if (!is_int($count) || $count < 1) {
+		    throw new InvalidArgumentException('Argument count must be a positive integer');
+		}
+
 		$output = '';
 
 		if (@is_readable('/dev/urandom') && ($fh = @fopen('/dev/urandom', 'rb'))) {
@@ -134,9 +142,14 @@ class PasswordHash {
 	# @return String
 	#
 	# @since 0.1.0
+	# @throws InvalidArgumentException Thows an InvalidArgumentException if the $count parameter is not a positive integer.
 	#
 	private function encode64($input, $count)
 	{
+		if (!is_int($count) || $count < 1) {
+		    throw new InvalidArgumentException('Argument count must be a positive integer');
+		}
+
 		$output = '';
 		$i = 0;
 
