@@ -112,7 +112,7 @@ class PasswordHash {
 	/**
 	 * @param  int $count
 	 *
-	 * @return String
+	 * @return String $output
 	 *
 	 * @since 0.1.0
 	 * @throws InvalidArgumentException Thows an InvalidArgumentException if the $count parameter is not a positive integer.
@@ -148,7 +148,7 @@ class PasswordHash {
 	 * @param  String $input
 	 * @param  int $count
 	 *
-	 * @return String
+	 * @return String $output
 	 *
 	 * @since 0.1.0
 	 * @throws InvalidArgumentException Thows an InvalidArgumentException if the $count parameter is not a positive integer.
@@ -191,7 +191,7 @@ class PasswordHash {
 	/**
 	 * @param  String $input
 	 *
-	 * @return String
+	 * @return String $output
 	 *
 	 * @since 0.1.0
 	 */
@@ -208,7 +208,7 @@ class PasswordHash {
 	 * @param  String $password
 	 * @param  String $setting
 	 *
-	 * @return String
+	 * @return String $output
 	 *
 	 * @since 0.1.0
 	 */
@@ -262,7 +262,7 @@ class PasswordHash {
 	/**
 	 * @param  String $input
 	 *
-	 * @return String
+	 * @return String $output
 	 *
 	 * @since 0.1.0
 	 */
@@ -286,7 +286,7 @@ class PasswordHash {
 	/**
 	 * @param  String $input
 	 *
-	 * @return String
+	 * @return String $output
 	 *
 	 * @since 0.1.0
 	 */
@@ -337,6 +337,8 @@ class PasswordHash {
 
 	/**
 	 * @param String $password
+	 *
+	 * @return String $hash or '*' on error
 	 *
 	 * @since 0.1.0
 	 */
