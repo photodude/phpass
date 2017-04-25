@@ -19,7 +19,6 @@
  * @copyright   Copyright (C) 2017 All rights reserved.
  * @license     http://www.opensource.org/licenses/mit-license.html MIT License; see LICENSE.txt
  */
-namespace openwall\phpass;
 
 /**
  * PasswordHash class is a portable password hashing framework for use in PHP applications.
