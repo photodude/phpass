@@ -214,7 +214,7 @@ class PasswordHash {
 		$id = substr($setting, 0, 3);
 
 		# We use "$P$", phpBB3 uses "$H$" for the same thing
-		if ($id != '$P$' && $id != '$H$') {
+		if ($id !== '$P$' && $id !== '$H$') {
 			return $output;
 		}
 
@@ -348,7 +348,7 @@ class PasswordHash {
 			$random = $this->get_random_bytes(16);
 			$hash = crypt($password, $this->gensalt_blowfish($random));
 
-			if (strlen($hash) == 60) {
+			if (strlen($hash) === 60) {
 				return $hash;
 			}
 		}
