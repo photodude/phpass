@@ -58,10 +58,6 @@ class PasswordHash {
 
 	private function get_random_bytes($count)
 	{
-		if (!is_int($count) || $count < 1) {
-		    throw new InvalidArgumentException('Argument count must be a positive integer');
-		}
-
 		$output = '';
 
 		if (@is_readable('/dev/urandom') && ($fh = @fopen('/dev/urandom', 'rb'))) {
@@ -85,10 +81,6 @@ class PasswordHash {
 
 	private function encode64($input, $count)
 	{
-		if (!is_int($count) || $count < 1) {
-		    throw new InvalidArgumentException('Argument count must be a positive integer');
-		}
-
 		$output = '';
 		$i = 0;
 
@@ -131,14 +123,14 @@ class PasswordHash {
 	{
 		$output = '*0';
 
-		if (substr($setting, 0, 2) == $output) {
+		if (substr($setting, 0, 2) === $output) {
 			$output = '*1';
 		}
 
 		$id = substr($setting, 0, 3);
 
 		# We use "$P$", phpBB3 uses "$H$" for the same thing
-		if ($id != '$P$' && $id != '$H$') {
+		if ($id !== '$P$' && $id !== '$H$') {
 			return $output;
 		}
 
@@ -249,16 +241,16 @@ class PasswordHash {
 	{
 		$random = '';
 
-		if (CRYPT_BLOWFISH == 1 && !$this->portable_hashes) {
+		if (CRYPT_BLOWFISH === 1 && !$this->portable_hashes) {
 			$random = $this->get_random_bytes(16);
 			$hash = crypt($password, $this->gensalt_blowfish($random));
 
-			if (strlen($hash) == 60) {
+			if (strlen($hash) === 60) {
 				return $hash;
 			}
 		}
 
-		if (CRYPT_EXT_DES == 1 && !$this->portable_hashes) {
+		if (CRYPT_EXT_DES === 1 && !$this->portable_hashes) {
 			if (strlen($random) < 3) {
 				$random = $this->get_random_bytes(3);
 			}
@@ -276,7 +268,7 @@ class PasswordHash {
 
 		$hash = $this->crypt_private($password, $this->gensalt_private($random));
 
-		if (strlen($hash) == 34) {
+		if (strlen($hash) === 34) {
 			return $hash;
 		}
 
@@ -292,7 +284,7 @@ class PasswordHash {
 	{
 		$hash = $this->crypt_private($password, $stored_hash);
 
-		if ($hash[0] == '*') {
+		if ($hash[0] === '*') {
 			$hash = crypt($password, $stored_hash);
 		}
 
