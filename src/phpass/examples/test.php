@@ -7,7 +7,7 @@
  * See PasswordHash.php for more information.
  */
 
-use openwall\phpass\PasswordHash;
+require 'PasswordHash.php';
 
 header('Content-type: text/plain');
 
