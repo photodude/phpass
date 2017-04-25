@@ -338,7 +338,7 @@ class PasswordHash {
 	/**
 	 * @param String $password
 	 *
-	 * @return String $hash or '*' on error
+	 * @return String $hash
 	 *
 	 * @since 0.1.0
 	 */
