@@ -1,79 +1,88 @@
 <?php
-#
-# Portable PHP password hashing framework.
-#
-# Version 0.4 / genuine.
-#
-# Written by Solar Designer <solar at openwall.com> in 2004-2006 and placed in
-# the public domain.  Revised in subsequent years, still public domain.
-#
-# There's absolutely no warranty.
-#
-# The homepage URL for this framework is:
-#
-#	http://www.openwall.com/phpass/
-#
-# Please be sure to update the Version line if you edit this file in any way.
-# It is suggested that you leave the main version number intact, but indicate
-# your project name (after the slash) and add your own revision information.
-#
-# Please do not change the "private" password hashing method implemented in
-# here, thereby making your hashes incompatible.  However, if you must, please
-# change the hash type identifier (the "$P$") to something different.
-#
-# Obviously, since this code is in the public domain, the above are not
-# requirements (there can be none), but merely suggestions.
-#
+/**
+ *
+ * Portable PHP password hashing framework.
+ *
+ * source Version 0.5 / genuine.
+ *
+ * Written by Solar Designer <solar at openwall.com> in 2004-2017 and placed in
+ * the public domain.  Revised in subsequent years, still public domain.
+ *
+ * There's absolutely no warranty.
+ *
+ * The homepage URL for the source framework is: http://www.openwall.com/phpass/
+ *
+ * Please be sure to update the Version line if you edit this file in any way.
+ * It is suggested that you leave the main version number intact, but indicate
+ * your project name (after the slash) and add your own revision information.
+ *
+ * Please do not change the "private" password hashing method implemented in
+ * here, thereby making your hashes incompatible.  However, if you must, please
+ * change the hash type identifier (the "$P$") to something different.
+ *
+ * Obviously, since this code is in the public domain, the above are not
+ * requirements (there can be none), but merely suggestions.
+ *
+ * @author Solar Designer <solar@openwall.com>
+ * @copyright   Copyright (C) 2017 All rights reserved.
+ * @license     http://www.opensource.org/licenses/mit-license.html MIT License; see LICENSE.txt
+ */
+
 namespace openwall\phpass;
 
+/**
+ * PasswordHash class is a portable password hashing framework for use in PHP applications.
+ *
+ * @since       0.1
+ */
 class PasswordHash {
-	#
-	# Alphabet used in itoa64 conversions.
-	#
-	# @var    string
-	# @since  0.1.0
-	#
+	/**
+	 * Alphabet used in itoa64 conversions.
+	 *
+	 * @var    string
+	 * @since  0.1.0
+	 */
 	private $itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
-	#
-	# The Logarithmic cost value used when generating hash values indicating the number of rounds used to generate hashes
-	#
-	# @var    integer
-	# @since  0.1.0
-	#
+	/**
+	 * The Logarithmic cost value used when generating hash values indicating the number of rounds used to generate hashes
+	 *
+	 * @var    integer
+	 * @since  0.1.0
+	 */
 	private $iteration_count_log2 = 12;
 
-	#
-	# The portable_hashes
-	#
-	# @var    string
-	# @since  0.1.0
-	#
+	/**
+	 * The portable_hashes
+	 *
+	 * @var    string
+	 * @since  0.1.0
+	 */
 	private $portable_hashes;
 
-	#
-	# The cached random state
-	#
-	# @var    string
-	# @since  0.1.0
-	#
+	/**
+	 * The cached random state
+	 *
+	 * @var    string
+	 * @since  0.1.0
+	 */
 	private $random_state;
 
-	#
-	# Constructor
-	#
-	# @param int $iteration_count_log2 Logarithmic cost value used when generating hash values
-	# @param boolean $portable_hashes
-	#
-	# @since 0.5.0
-	#
+	/**
+	 * Constructor
+	 *
+	 * @param int $iteration_count_log2 Logarithmic cost value used when generating hash values
+	 * @param boolean $portable_hashes
+	 *
+	 * @since 0.5.0
+	 */
 	public function __construct($iteration_count_log2, $portable_hashes)
 	{
 		if ($iteration_count_log2 < 10) {
-			# The minimum Logarithmic cost value
+			// The minimum Logarithmic cost value
 			$iteration_count_log2 = 10; 
 		} else if ($iteration_count_log2 > 32) {
-			# The maximum Logarithmic cost value
+			// The maximum Logarithmic cost value
 			$iteration_count_log2 = 32;
 		}
 
@@ -86,28 +95,28 @@ class PasswordHash {
 		}
 	}
 
-	#
-	# A backwards compatable constructor
-	#
-	# @param int $iteration_count_log2 Logarithmic cost value used when generating hash values
-	# @param boolean $portable_hashes
-	#
-	# @since 0.1.0
-	# @throws InvalidArgumentException Thows an InvalidArgumentException if the $count parameter is not a positive integer.
-	#
+	/**
+	 *  A backwards compatable constructor
+	 *
+	 * @param int $iteration_count_log2 Logarithmic cost value used when generating hash values
+	 * @param boolean $portable_hashes
+	 *
+	 * @since 0.1.0
+	 * @throws InvalidArgumentException Thows an InvalidArgumentException if the $count parameter is not a positive integer.
+	 */
 	public function PasswordHash($iteration_count_log2, $portable_hashes)
 	{
 		self::__construct($iteration_count_log2, $portable_hashes);
 	}
 
-	#
-	# @param  int $count
-	#
-	# @return String
-	#
-	# @since 0.1.0
-	# @throws InvalidArgumentException Thows an InvalidArgumentException if the $count parameter is not a positive integer.
-	#
+	/**
+	 * @param  int $count
+	 *
+	 * @return String
+	 *
+	 * @since 0.1.0
+	 * @throws InvalidArgumentException Thows an InvalidArgumentException if the $count parameter is not a positive integer.
+	 */
 	private function get_random_bytes($count)
 	{
 		if (!is_int($count) || $count < 1) {
@@ -135,15 +144,15 @@ class PasswordHash {
 		return $output;
 	}
 
-	#
-	# @param  String $input
-	# @param  int $count
-	#
-	# @return String
-	#
-	# @since 0.1.0
-	# @throws InvalidArgumentException Thows an InvalidArgumentException if the $count parameter is not a positive integer.
-	#
+	/**
+	 * @param  String $input
+	 * @param  int $count
+	 *
+	 * @return String
+	 *
+	 * @since 0.1.0
+	 * @throws InvalidArgumentException Thows an InvalidArgumentException if the $count parameter is not a positive integer.
+	 */
 	private function encode64($input, $count)
 	{
 		if (!is_int($count) || $count < 1) {
@@ -179,13 +188,13 @@ class PasswordHash {
 		return $output;
 	}
 
-	#
-	# @param  String $input
-	#
-	# @return String
-	#
-	# @since 0.1.0
-	#
+	/**
+	 * @param  String $input
+	 *
+	 * @return String
+	 *
+	 * @since 0.1.0
+	 */
 	private function gensalt_private($input)
 	{
 		$output = '$P$';
@@ -195,14 +204,14 @@ class PasswordHash {
 		return $output;
 	}
 
-	#
-	# @param  String $password
-	# @param  String $setting
-	#
-	# @return String
-	#
-	# @since 0.1.0
-	#
+	/**
+	 * @param  String $password
+	 * @param  String $setting
+	 *
+	 * @return String
+	 *
+	 * @since 0.1.0
+	 */
 	private function crypt_private($password, $setting)
 	{
 		$output = '*0';
@@ -213,7 +222,7 @@ class PasswordHash {
 
 		$id = substr($setting, 0, 3);
 
-		# We use "$P$", phpBB3 uses "$H$" for the same thing
+		// We use "$P$", phpBB3 uses "$H$" for the same thing
 		if ($id !== '$P$' && $id !== '$H$') {
 			return $output;
 		}
@@ -231,27 +240,18 @@ class PasswordHash {
 			return $output;
 		}
 
-		#
-		# We're kind of forced to use MD5 here since it's the only
-		# cryptographic primitive available in all versions of PHP
-		# currently in use.  To implement our own low-level crypto
-		# in PHP would result in much worse performance and
-		# consequently in lower iteration counts and hashes that are
-		# quicker to crack (by non-PHP code).
-		#
-		if (PHP_VERSION >= '5') {
-			$hash = md5($salt . $password, TRUE);
-
-			do {
-				$hash = md5($hash . $password, TRUE);
-			} while (--$count);
-		} else {
-			$hash = pack('H*', md5($salt . $password));
-
-			do {
-				$hash = pack('H*', md5($hash . $password));
-			} while (--$count);
-		}
+		/**
+		 * We're kind of forced to use MD5 here since it's the only
+		 * cryptographic primitive available in all versions of PHP
+		 * currently in use.  To implement our own low-level crypto
+		 * in PHP would result in much worse performance and
+		 * consequently in lower iteration counts and hashes that are
+		 * quicker to crack (by non-PHP code).
+		 */
+		$hash = md5($salt . $password, TRUE);
+		do {
+			$hash = md5($hash . $password, TRUE);
+		} while (--$count);
 
 		$output = substr($setting, 0, 12);
 		$output .= $this->encode64($hash, 16);
@@ -259,18 +259,18 @@ class PasswordHash {
 		return $output;
 	}
 
-	#
-	# @param  String $input
-	#
-	# @return String
-	#
-	# @since 0.1.0
-	#
+	/**
+	 * @param  String $input
+	 *
+	 * @return String
+	 *
+	 * @since 0.1.0
+	 */
 	private function gensalt_extended($input)
 	{
 		$count_log2 = min($this->iteration_count_log2 + 8, 24);
-		# This should be odd to not reveal weak DES keys, and the
-		# maximum valid value is (2**24 - 1) which is odd anyway.
+		// This should be odd to not reveal weak DES keys, and the
+		// maximum valid value is (2**24 - 1) which is odd anyway.
 		$count = (1 << $count_log2) - 1;
 
 		$output = '_';
@@ -283,25 +283,25 @@ class PasswordHash {
 		return $output;
 	}
 
-	#
-	# @param  String $input
-	#
-	# @return String
-	#
-	# @since 0.1.0
-	#
+	/**
+	 * @param  String $input
+	 *
+	 * @return String
+	 *
+	 * @since 0.1.0
+	 */
 	private function gensalt_blowfish($input)
 	{
-		#
-		# This one needs to use a different order of characters and a
-		# different encoding scheme from the one in encode64() above.
-		# We care because the last character in our encoded string will
-		# only represent 2 bits.  While two known implementations of
-		# bcrypt will happily accept and correct a salt string which
-		# has the 4 unused bits set to non-zero, we do not want to take
-		# chances and we also do not want to waste an additional byte
-		# of entropy.
-		#
+		/**
+		 * This one needs to use a different order of characters and a
+		 * different encoding scheme from the one in encode64() above.
+		 * We care because the last character in our encoded string will
+		 * only represent 2 bits.  While two known implementations of
+		 * bcrypt will happily accept and correct a salt string which
+		 * has the 4 unused bits set to non-zero, we do not want to take
+		 * chances and we also do not want to waste an additional byte
+		 * of entropy.
+		 */
 		$itoa64 = './ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
 		$output = '$2a$';
@@ -335,11 +335,11 @@ class PasswordHash {
 		return $output;
 	}
 
-	#
-	# @param String $password
-	#
-	# @since 0.1.0
-	#
+	/**
+	 * @param String $password
+	 *
+	 * @since 0.1.0
+	 */
 	public function HashPassword($password)
 	{
 		$random = '';
@@ -349,18 +349,6 @@ class PasswordHash {
 			$hash = crypt($password, $this->gensalt_blowfish($random));
 
 			if (strlen($hash) === 60) {
-				return $hash;
-			}
-		}
-
-		if (CRYPT_EXT_DES === 1 && !$this->portable_hashes) {
-			if (strlen($random) < 3) {
-				$random = $this->get_random_bytes(3);
-			}
-
-			$hash = crypt($password, $this->gensalt_extended($random));
-
-			if (strlen($hash) === 20) {
 				return $hash;
 			}
 		}
@@ -375,22 +363,22 @@ class PasswordHash {
 			return $hash;
 		}
 
-		#
-		# Returning '*' on error is safe here, but would _not_ be safe
-		# in a crypt(3)-like function used _both_ for generating new
-		# hashes and for validating passwords against existing hashes.
-		#
+		/**
+		 * Returning '*' on error is safe here, but would _not_ be safe
+		 * in a crypt(3)-like function used _both_ for generating new
+		 * hashes and for validating passwords against existing hashes.
+		 */
 		return '*';
 	}
 
-	#
-	# @param String $password
-	# @param String $stored_hash
-	#
-	# @return boolean
-	#
-	# @since 0.1.0
-	#
+	/**
+	 * @param String $password
+	 * @param String $stored_hash
+	 *
+	 * @return boolean
+	 *
+	 * @since 0.1.0
+	 */
 	public function CheckPassword($password, $stored_hash)
 	{
 		$hash = $this->crypt_private($password, $stored_hash);
@@ -402,5 +390,3 @@ class PasswordHash {
 		return $hash === $stored_hash;
 	}
 }
-
-?>
