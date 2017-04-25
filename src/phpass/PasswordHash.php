@@ -27,46 +27,11 @@
 namespace openwall\phpass;
 
 class PasswordHash {
-	#
-	# Alphabet used in itoa64 conversions.
-	#
-	# @var    string
-	# @since  0.1.0
-	#
 	private $itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-
-	#
-	# The Logarithmic cost value used when generating hash values indicating the number of rounds used to generate hashes
-	#
-	# @var    integer
-	# @since  0.1.0
-	#
 	private $iteration_count_log2 = 12;
-
-	#
-	# The portable_hashes
-	#
-	# @var    string
-	# @since  0.1.0
-	#
 	private $portable_hashes;
-
-	#
-	# The cached random state
-	#
-	# @var    string
-	# @since  0.1.0
-	#
 	private $random_state;
 
-	#
-	# Constructor
-	#
-	# @param int $iteration_count_log2 Logarithmic cost value used when generating hash values
-	# @param boolean $portable_hashes
-	#
-	# @since 0.5.0
-	#
 	public function __construct($iteration_count_log2, $portable_hashes)
 	{
 		if ($iteration_count_log2 < 10) {
@@ -86,28 +51,11 @@ class PasswordHash {
 		}
 	}
 
-	#
-	# A backwards compatable constructor
-	#
-	# @param int $iteration_count_log2 Logarithmic cost value used when generating hash values
-	# @param boolean $portable_hashes
-	#
-	# @since 0.1.0
-	# @throws InvalidArgumentException Thows an InvalidArgumentException if the $count parameter is not a positive integer.
-	#
 	public function PasswordHash($iteration_count_log2, $portable_hashes)
 	{
 		self::__construct($iteration_count_log2, $portable_hashes);
 	}
 
-	#
-	# @param  int $count
-	#
-	# @return String
-	#
-	# @since 0.1.0
-	# @throws InvalidArgumentException Thows an InvalidArgumentException if the $count parameter is not a positive integer.
-	#
 	private function get_random_bytes($count)
 	{
 		if (!is_int($count) || $count < 1) {
@@ -135,15 +83,6 @@ class PasswordHash {
 		return $output;
 	}
 
-	#
-	# @param  String $input
-	# @param  int $count
-	#
-	# @return String
-	#
-	# @since 0.1.0
-	# @throws InvalidArgumentException Thows an InvalidArgumentException if the $count parameter is not a positive integer.
-	#
 	private function encode64($input, $count)
 	{
 		if (!is_int($count) || $count < 1) {
@@ -179,13 +118,6 @@ class PasswordHash {
 		return $output;
 	}
 
-	#
-	# @param  String $input
-	#
-	# @return String
-	#
-	# @since 0.1.0
-	#
 	private function gensalt_private($input)
 	{
 		$output = '$P$';
@@ -195,14 +127,6 @@ class PasswordHash {
 		return $output;
 	}
 
-	#
-	# @param  String $password
-	# @param  String $setting
-	#
-	# @return String
-	#
-	# @since 0.1.0
-	#
 	private function crypt_private($password, $setting)
 	{
 		$output = '*0';
@@ -259,13 +183,6 @@ class PasswordHash {
 		return $output;
 	}
 
-	#
-	# @param  String $input
-	#
-	# @return String
-	#
-	# @since 0.1.0
-	#
 	private function gensalt_extended($input)
 	{
 		$count_log2 = min($this->iteration_count_log2 + 8, 24);
@@ -283,13 +200,6 @@ class PasswordHash {
 		return $output;
 	}
 
-	#
-	# @param  String $input
-	#
-	# @return String
-	#
-	# @since 0.1.0
-	#
 	private function gensalt_blowfish($input)
 	{
 		#
@@ -335,11 +245,6 @@ class PasswordHash {
 		return $output;
 	}
 
-	#
-	# @param String $password
-	#
-	# @since 0.1.0
-	#
 	public function HashPassword($password)
 	{
 		$random = '';
@@ -383,14 +288,6 @@ class PasswordHash {
 		return '*';
 	}
 
-	#
-	# @param String $password
-	# @param String $stored_hash
-	#
-	# @return boolean
-	#
-	# @since 0.1.0
-	#
 	public function CheckPassword($password, $stored_hash)
 	{
 		$hash = $this->crypt_private($password, $stored_hash);
