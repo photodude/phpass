@@ -13,17 +13,9 @@
 		}
 	],
 	"require": {
-		"php": "^5.3.10||~7.0",
-	},
-	"require-dev": {
-		"phpunit/phpunit": "~4.8||~5.0",
-		"mockery/mockery": "0.9.4||~0.9.5",
-		"fiunchinho/phpunit-randomizer": "1.0.*@dev"
-        	"squizlabs/php_codesniffer": "2.7.*"
+		"php": "^5.2||~7.0",
 	},
 	"autoload" : {
-		"psr-4": {
-			"openwall\\phpass\\": "src/phpass"
-		}
+		"files": ["src/phpass/PasswordHash.php"]
 	}
 }
