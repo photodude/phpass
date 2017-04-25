@@ -1,33 +1,24 @@
 <?php
 /**
- *
  * Portable PHP password hashing framework.
- *
  * source Version 0.5 / genuine.
- *
  * Written by Solar Designer <solar at openwall.com> in 2004-2017 and placed in
  * the public domain.  Revised in subsequent years, still public domain.
- *
  * There's absolutely no warranty.
- *
  * The homepage URL for the source framework is: http://www.openwall.com/phpass/
- *
  * Please be sure to update the Version line if you edit this file in any way.
  * It is suggested that you leave the main version number intact, but indicate
  * your project name (after the slash) and add your own revision information.
- *
  * Please do not change the "private" password hashing method implemented in
  * here, thereby making your hashes incompatible.  However, if you must, please
  * change the hash type identifier (the "$P$") to something different.
- *
  * Obviously, since this code is in the public domain, the above are not
  * requirements (there can be none), but merely suggestions.
  *
- * @author Solar Designer <solar@openwall.com>
+ * @author      Solar Designer <solar@openwall.com>
  * @copyright   Copyright (C) 2017 All rights reserved.
  * @license     http://www.opensource.org/licenses/mit-license.html MIT License; see LICENSE.txt
  */
-
 namespace openwall\phpass;
 
 /**
@@ -35,7 +26,8 @@ namespace openwall\phpass;
  *
  * @since       0.1
  */
-class PasswordHash {
+class PasswordHash
+{
 	/**
 	 * Alphabet used in itoa64 conversions.
 	 *
@@ -80,16 +72,16 @@ class PasswordHash {
 	{
 		if ($iteration_count_log2 < 10) {
 			// The minimum Logarithmic cost value
-			$iteration_count_log2 = 10; 
-		} else if ($iteration_count_log2 > 32) {
-			// The maximum Logarithmic cost value
-			$iteration_count_log2 = 32;
+			$iteration_count_log2 = 10;
+		} else {
+			if ($iteration_count_log2 > 32) {
+				// The maximum Logarithmic cost value
+				$iteration_count_log2 = 32;
+			}
 		}
-
 		$this->iteration_count_log2 = $iteration_count_log2;
 		$this->portable_hashes = $portable_hashes;
 		$this->random_state = microtime();
-
 		if (function_exists('getmypid')) {
 			$this->random_state .= getmypid();
 		}
@@ -113,18 +105,15 @@ class PasswordHash {
 	 * @param  int $count
 	 *
 	 * @return String $output
-	 *
 	 * @since 0.1.0
 	 * @throws InvalidArgumentException Thows an InvalidArgumentException if the $count parameter is not a positive integer.
 	 */
 	private function get_random_bytes($count)
 	{
 		if (!is_int($count) || $count < 1) {
-		    throw new InvalidArgumentException('Argument count must be a positive integer');
+			throw new InvalidArgumentException('Argument count must be a positive integer');
 		}
-
 		$output = '';
-
 		if (@is_readable('/dev/urandom') && ($fh = @fopen('/dev/urandom', 'rb'))) {
 			$output = fread($fh, $count);
 			fclose($fh);
@@ -135,7 +124,7 @@ class PasswordHash {
 
 			for ($i = 0; $i < $count; $i += 16) {
 				$this->random_state = md5(microtime() . $this->random_state);
-				$output .= pack('H*', md5($this->random_state));
+				$output .= md5($this->random_state, TRUE);
 			}
 
 			$output = substr($output, 0, $count);
@@ -149,39 +138,33 @@ class PasswordHash {
 	 * @param  int $count
 	 *
 	 * @return String $output
-	 *
 	 * @since 0.1.0
 	 * @throws InvalidArgumentException Thows an InvalidArgumentException if the $count parameter is not a positive integer.
 	 */
 	private function encode64($input, $count)
 	{
 		if (!is_int($count) || $count < 1) {
-		    throw new InvalidArgumentException('Argument count must be a positive integer');
+			throw new InvalidArgumentException('Argument count must be a positive integer');
 		}
-
 		$output = '';
 		$i = 0;
-
 		do {
 			$value = ord($input[$i++]);
 			$output .= $this->itoa64[$value & 0x3f];
-
 			if ($i < $count) {
 				$value |= ord($input[$i]) << 8;
 			}
-
 			$output .= $this->itoa64[($value >> 6) & 0x3f];
-
-			if ($i++ >= $count) break;
-
+			if ($i++ >= $count) {
+				break;
+			}
 			if ($i < $count) {
 				$value |= ord($input[$i]) << 16;
 			}
-
 			$output .= $this->itoa64[($value >> 12) & 0x3f];
-
-			if ($i++ >= $count) break;
-
+			if ($i++ >= $count) {
+				break;
+			}
 			$output .= $this->itoa64[($value >> 18) & 0x3f];
 		} while ($i < $count);
 
@@ -192,7 +175,6 @@ class PasswordHash {
 	 * @param  String $input
 	 *
 	 * @return String $output
-	 *
 	 * @since 0.1.0
 	 */
 	private function gensalt_private($input)
@@ -209,37 +191,28 @@ class PasswordHash {
 	 * @param  String $setting
 	 *
 	 * @return String $output
-	 *
 	 * @since 0.1.0
 	 */
 	private function crypt_private($password, $setting)
 	{
 		$output = '*0';
-
 		if (substr($setting, 0, 2) === $output) {
 			$output = '*1';
 		}
-
 		$id = substr($setting, 0, 3);
-
 		// We use "$P$", phpBB3 uses "$H$" for the same thing
 		if ($id !== '$P$' && $id !== '$H$') {
 			return $output;
 		}
-
 		$count_log2 = strpos($this->itoa64, $setting[3]);
-
 		if ($count_log2 < 7 || $count_log2 > 30) {
 			return $output;
 		}
-
 		$count = 1 << $count_log2;
 		$salt = substr($setting, 4, 8);
-
 		if (strlen($salt) !== 8) {
 			return $output;
 		}
-
 		/**
 		 * We're kind of forced to use MD5 here since it's the only
 		 * cryptographic primitive available in all versions of PHP
@@ -252,7 +225,6 @@ class PasswordHash {
 		do {
 			$hash = md5($hash . $password, TRUE);
 		} while (--$count);
-
 		$output = substr($setting, 0, 12);
 		$output .= $this->encode64($hash, 16);
 
@@ -263,7 +235,6 @@ class PasswordHash {
 	 * @param  String $input
 	 *
 	 * @return String $output
-	 *
 	 * @since 0.1.0
 	 */
 	private function gensalt_extended($input)
@@ -272,7 +243,6 @@ class PasswordHash {
 		// This should be odd to not reveal weak DES keys, and the
 		// maximum valid value is (2**24 - 1) which is odd anyway.
 		$count = (1 << $count_log2) - 1;
-
 		$output = '_';
 		$output .= $this->itoa64[$count & 0x3f];
 		$output .= $this->itoa64[($count >> 6) & 0x3f];
@@ -287,7 +257,6 @@ class PasswordHash {
 	 * @param  String $input
 	 *
 	 * @return String $output
-	 *
 	 * @since 0.1.0
 	 */
 	private function gensalt_blowfish($input)
@@ -303,29 +272,23 @@ class PasswordHash {
 		 * of entropy.
 		 */
 		$itoa64 = './ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
 		$output = '$2a$';
 		$output .= chr(ord('0') + $this->iteration_count_log2 / 10);
 		$output .= chr(ord('0') + $this->iteration_count_log2 % 10);
 		$output .= '$';
-
 		$i = 0;
-
 		do {
 			$c1 = ord($input[$i++]);
 			$output .= $itoa64[$c1 >> 2];
 			$c1 = ($c1 & 0x03) << 4;
-
 			if ($i >= 16) {
 				$output .= $itoa64[$c1];
 				break;
 			}
-
 			$c2 = ord($input[$i++]);
 			$c1 |= $c2 >> 4;
 			$output .= $itoa64[$c1];
 			$c1 = ($c2 & 0x0f) << 2;
-
 			$c2 = ord($input[$i++]);
 			$c1 |= $c2 >> 6;
 			$output .= $itoa64[$c1];
@@ -339,28 +302,22 @@ class PasswordHash {
 	 * @param String $password
 	 *
 	 * @return String $hash
-	 *
 	 * @since 0.1.0
 	 */
 	public function HashPassword($password)
 	{
 		$random = '';
-
 		if (CRYPT_BLOWFISH === 1 && !$this->portable_hashes) {
 			$random = $this->get_random_bytes(16);
 			$hash = crypt($password, $this->gensalt_blowfish($random));
-
 			if (strlen($hash) === 60) {
 				return $hash;
 			}
 		}
-
 		if (strlen($random) < 6) {
 			$random = $this->get_random_bytes(6);
 		}
-
 		$hash = $this->crypt_private($password, $this->gensalt_private($random));
-
 		if (strlen($hash) === 34) {
 			return $hash;
 		}
@@ -378,13 +335,11 @@ class PasswordHash {
 	 * @param String $stored_hash
 	 *
 	 * @return boolean
-	 *
 	 * @since 0.1.0
 	 */
 	public function CheckPassword($password, $stored_hash)
 	{
 		$hash = $this->crypt_private($password, $stored_hash);
-
 		if ($hash[0] === '*') {
 			$hash = crypt($password, $stored_hash);
 		}
