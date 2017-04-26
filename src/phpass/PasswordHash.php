@@ -33,7 +33,7 @@ class PasswordHash
 	 * @var    string
 	 * @since  0.1.0
 	 */
-	private $itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+	protected $itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
 	/**
 	 * The Logarithmic cost value used when generating hash values indicating the number of rounds used to generate hashes
@@ -41,7 +41,7 @@ class PasswordHash
 	 * @var    integer
 	 * @since  0.1.0
 	 */
-	private $iteration_count_log2 = 12;
+	public $iteration_count_log2 = 12;
 
 	/**
 	 * The portable_hashes
@@ -49,7 +49,7 @@ class PasswordHash
 	 * @var    string
 	 * @since  0.1.0
 	 */
-	private $portable_hashes;
+	public $portable_hashes;
 
 	/**
 	 * The cached random state
@@ -57,13 +57,13 @@ class PasswordHash
 	 * @var    string
 	 * @since  0.1.0
 	 */
-	private $random_state;
+	protected $random_state;
 
 	/**
 	 * Constructor
 	 *
 	 * @param int $iteration_count_log2 Logarithmic cost value used when generating hash values
-	 * @param boolean $portable_hashes
+	 * @param string $portable_hashes
 	 *
 	 * @since 0.5.0
 	 */
@@ -90,7 +90,7 @@ class PasswordHash
 	 *  A backwards compatable constructor
 	 *
 	 * @param int $iteration_count_log2 Logarithmic cost value used when generating hash values
-	 * @param boolean $portable_hashes
+	 * @param string $portable_hashes
 	 *
 	 * @since 0.1.0
 	 * @throws InvalidArgumentException Thows an InvalidArgumentException if the $count parameter is not a positive integer.
@@ -107,7 +107,7 @@ class PasswordHash
 	 * @since 0.1.0
 	 * @throws InvalidArgumentException Thows an InvalidArgumentException if the $count parameter is not a positive integer.
 	 */
-	private function get_random_bytes($count)
+	protected function get_random_bytes($count)
 	{
 		if (!is_int($count) || $count < 1) {
 			throw new InvalidArgumentException('Argument count must be a positive integer');
@@ -140,7 +140,7 @@ class PasswordHash
 	 * @since 0.1.0
 	 * @throws InvalidArgumentException Thows an InvalidArgumentException if the $count parameter is not a positive integer.
 	 */
-	private function encode64($input, $count)
+	protected function encode64($input, $count)
 	{
 		if (!is_int($count) || $count < 1) {
 			throw new InvalidArgumentException('Argument count must be a positive integer');
