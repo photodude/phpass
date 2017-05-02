@@ -213,10 +213,10 @@ class PasswordHash
 			return $output;
 		}
 		/**
-		 * We're kind of forced to use MD5 here since it's the only
-		 * cryptographic primitive available in all versions of PHP
-		 * currently in use.  To implement our own low-level crypto
-		 * in PHP would result in much worse performance and
+		 * We were kind of forced to use MD5 here since it's the only
+		 * cryptographic primitive that was available in all versions of PHP
+		 * in use.  To implement our own low-level crypto in PHP
+		 * would have result in much worse performance and
 		 * consequently in lower iteration counts and hashes that are
 		 * quicker to crack (by non-PHP code).
 		 */
@@ -321,6 +321,12 @@ class PasswordHash
 			$hash = crypt($password, $stored_hash);
 		}
 
+		/**
+		 * This is not constant-time.  In order to keep the code simple,
+		 * for timing safety we currently rely on the salts being
+		 * unpredictable, which they are at least in the non-fallback
+		 * cases (that is, when we use /dev/urandom and bcrypt).
+		 */
 		return $hash === $stored_hash;
 	}
 }
